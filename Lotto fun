@@ -1,0 +1,53 @@
+import urllib.request
+from bs4 import BeautifulSoup
+
+
+
+small_lotto_dict = {}
+bonus_lotto_dict = {}
+lotto_list = ["https://www.lottery.co.uk/lotto/results/archive-2019",
+              "https://www.lottery.co.uk/lotto/results/archive-2018",
+              "https://www.lottery.co.uk/lotto/results/archive-2017",
+              "https://www.lottery.co.uk/lotto/results/archive-2016",
+              "https://www.lottery.co.uk/lotto/results/archive-2015",
+              "https://www.lottery.co.uk/lotto/results/archive-2014",
+              "https://www.lottery.co.uk/lotto/results/archive-2013",
+              "https://www.lottery.co.uk/lotto/results/archive-2012",
+              "https://www.lottery.co.uk/lotto/results/archive-2011",
+              "https://www.lottery.co.uk/lotto/results/archive-2010",
+              "https://www.lottery.co.uk/lotto/results/archive-2009",
+              "https://www.lottery.co.uk/lotto/results/archive-2008",]
+
+'''The setup and reading of the webpages '''
+for x in lotto_list:
+    lotto = x
+    '''The break down of the orignal web page into the table containing the
+    ball numbers'''
+    page = urllib.request.urlopen(lotto)
+    soup = BeautifulSoup(page)
+    table = soup.table
+    all_results = table.find_all("div")
+
+    '''Adding the numbers to a tally to find the most common'''
+    x = 1
+    for result in all_results:
+        if x % 7 == 0:
+            if result.string in bonus_lotto_dict:
+                bonus_lotto_dict[result.string] += 1
+            else:
+                bonus_lotto_dict[result.string] = 1
+        else:
+            if result.string in small_lotto_dict:
+                small_lotto_dict[result.string] += 1
+            else:
+                small_lotto_dict[result.string] = 1
+        x += 1
+
+'''sorting the numbers into the top versions'''
+b = sorted(bonus_lotto_dict.items(), key=lambda kv: kv[1],reverse= True)
+print(b[0:1])
+s = sorted(small_lotto_dict.items(), key=lambda kv: kv[1],reverse=True)
+print(s[0:12])
+
+print(b)
+print(s)
